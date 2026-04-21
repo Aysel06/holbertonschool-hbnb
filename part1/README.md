@@ -1,23 +1,17 @@
-# HBnB Technical Documentation
+1. Introduction
 
-## 1. Introduction
+This document presents a detailed technical description of the HBnB application’s architecture and design. Its purpose is to guide the development process by clearly outlining the system structure, business logic, and interaction mechanisms.
 
-This document provides a comprehensive technical overview of the HBnB application architecture and design. It serves as a blueprint for the development process by illustrating the system structure, core business logic, and interaction flows.
+The document covers:
 
-The document includes:
-- High-Level Architecture (Package Diagram)
-- Business Logic Layer (Class Diagram)
-- API Interaction Flow (Sequence Diagrams)
+High-Level Architecture (Package Diagram)
+Business Logic Layer (Class Diagram)
+API Interaction Flow (Sequence Diagrams)
 
-The goal is to ensure clarity, maintainability, and scalability of the system.
+The main objective is to achieve a system that is easy to understand, scalable, and maintainable.
 
----
-
-## 2. High-Level Architecture
-
-### Package Diagram
-
-```mermaid
+2. High-Level Architecture
+Package Diagram
 flowchart TD
 
 subgraph Presentation_Layer
@@ -53,36 +47,46 @@ Services --> Amenity
 
 Services --> Repositories
 Repositories --> Database
-```
+Explanation
 
-### Explanation
+The system is designed using a three-tier architecture:
 
-The system follows a **three-layer architecture**:
+Presentation Layer
+Responsible for handling user interactions (UI and API)
+Sends incoming requests to the backend
+Business Logic Layer
+Contains the main logic of the application
+Includes services, models, and a facade to coordinate operations
+Persistence Layer
+Handles data storage and retrieval
+Uses repositories to interact with the database
+Facade Pattern
 
-- **Presentation Layer**
-  - Handles user interaction via UI and API
-  - Sends requests to the system
+The Facade acts as a central access point to the Business Logic Layer.
+It simplifies communication between layers and reduces direct dependencies.
 
-- **Business Logic Layer**
-  - Contains core application logic
-  - Includes services, models, and a facade
+3. Business Logic Layer
+Class Diagram
+Explanation
 
-- **Persistence Layer**
-  - Manages database operations
-  - Uses repositories for data access
+The system is designed using a three-tier architecture:
 
-### Facade Pattern
+Presentation Layer
+Responsible for handling user interactions (UI and API)
+Sends incoming requests to the backend
+Business Logic Layer
+Contains the main logic of the application
+Includes services, models, and a facade to coordinate operations
+Persistence Layer
+Handles data storage and retrieval
+Uses repositories to interact with the database
+Facade Pattern
 
-The **Facade** acts as a single entry point to the Business Logic Layer.  
-It simplifies communication and reduces coupling between layers.
+The Facade acts as a central access point to the Business Logic Layer.
+It simplifies communication between layers and reduces direct dependencies.
 
----
-
-## 3. Business Logic Layer
-
-### Class Diagram
-
-```mermaid
+3. Business Logic Layer
+Class Diagram
 classDiagram
 
 class User {
@@ -137,39 +141,25 @@ Place "1" --> "0..*" Review : has
 Place "0..*" --> "0..*" Amenity : includes
 Review --> User : author
 Review --> Place : place
-```
-
-### Explanation
-
-#### Entities
-
-- **User**: Represents application users
-- **Place**: Represents property listings
-- **Review**: Represents feedback on places
-- **Amenity**: Represents features (e.g., Wi-Fi, parking)
-
-#### Design Decisions
-
-- Each entity includes:
-  - Unique identifier (UUID)
-  - Creation and update timestamps
-- CRUD methods are defined for basic operations
-
-#### Relationships
-
-- A User can own multiple Places
-- A User can write multiple Reviews
-- A Place can have multiple Reviews
-- A Place can have multiple Amenities (many-to-many)
-- A Review is linked to both User and Place
-
----
-
-## 4. API Interaction Flow
-
-### 4.1 User Registration
-
-```mermaid
+Explanation
+Entities
+User: Represents users of the platform
+Place: Represents listed properties
+Review: Stores user feedback about places
+Amenity: Represents available features (e.g., Wi-Fi, parking)
+Design Choices
+Each entity includes:
+A unique identifier (UUID)
+Timestamps for creation and updates
+Standard CRUD operations are provided for each entity
+Relationships
+A User can own multiple Places
+A User can create multiple Reviews
+A Place can have multiple Reviews
+A Place can be associated with multiple Amenities (many-to-many)
+Each Review is linked to both a User and a Place
+4. API Interaction Flow
+4.1 User Registration
 sequenceDiagram
 participant User
 participant API
@@ -188,13 +178,6 @@ Repository-->>Service: user saved
 Service-->>Facade: return user
 Facade-->>API: response
 API-->>User: 201 Created
-```
-
----
-
-### 4.2 Place Creation
-
-```mermaid
 sequenceDiagram
 participant User
 participant API
@@ -213,13 +196,6 @@ Repository-->>Service: place saved
 Service-->>Facade: return place
 Facade-->>API: response
 API-->>User: 201 Created
-```
-
----
-
-### 4.3 Review Submission
-
-```mermaid
 sequenceDiagram
 participant User
 participant API
@@ -238,13 +214,6 @@ Repository-->>Service: review saved
 Service-->>Facade: return review
 Facade-->>API: response
 API-->>User: 201 Created
-```
-
----
-
-### 4.4 Fetch List of Places
-
-```mermaid
 sequenceDiagram
 participant User
 participant API
@@ -255,41 +224,34 @@ participant Database
 
 User->>API: GET /places
 API->>Facade: get_places(filters)
-Facade->>Service: process_filters(filters)
-Service->>Repository: fetch_places(filters)
+Facade->>Service: handle_filters(filters)
+Service->>Repository: retrieve_places(filters)
 Repository->>Database: SELECT * FROM places
 Database-->>Repository: places data
-Repository-->>Service: list of places
-Service-->>Facade: formatted data
+Repository-->>Service: results
+Service-->>Facade: processed data
 Facade-->>API: response
 API-->>User: 200 OK
-```
+Explanation
 
----
-
-### Explanation
-
-All API calls follow a consistent interaction flow:
+All API requests follow a unified flow:
 
 User → API → Facade → Service → Repository → Database → Response
 
-#### Key Points
+Key Points
+API Layer receives and processes incoming requests
+Facade acts as an intermediary for business operations
+Service Layer handles validation and core logic
+Repository Layer manages data access
+Database stores all persistent information
+5. Conclusion
 
-- **API Layer** handles incoming requests
-- **Facade** simplifies access to business logic
-- **Service Layer** processes logic and validation
-- **Repository Layer** handles database operations
-- **Database** stores persistent data
+This document outlines the overall architecture and design of the HBnB system in a clear and structured way.
 
----
+It helps ensure:
 
-## 5. Conclusion
+Proper separation between system layers
+Scalability and ease of maintenance
+Consistent behavior across different components
 
-This document provides a structured overview of the HBnB system architecture and design.
-
-It ensures:
-- Clear separation of concerns
-- Scalable and maintainable architecture
-- Consistent interaction patterns across the system
-
-The diagrams and explanations serve as a reliable reference for development and future enhancements.
+The diagrams and explanations can be used as a solid reference during development and future improvements.
